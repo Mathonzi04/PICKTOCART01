@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - TechSpecCheck</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #00356E;
+            --primary-light: #0059B3;
+            --secondary: #FF6B35;
+            --accent: #00A896;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            width:100%;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 53, 110, 0.8), rgba(0, 53, 110, 0.9)), url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+
+        .content-section h2 {
+            color: var(--primary);
+            font-size: 32px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .content-section p {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 17px;
+        }
+
+        .highlight-box {
+            background: rgba(0, 53, 110, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Team Section */
+        .team-section {
+            margin-top: 60px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .team-member {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: var(--primary);
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .member-role {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .member-bio {
+            color: var(--dark);
+            font-size: 15px;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 60px 0;
+            margin: 60px 0;
+            border-radius: 12px;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        /* Service Highlights */
+        .service-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 20px;
+        }
+
+        .service-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .service-description {
+            color: var(--dark);
+            font-size: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-section p, .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .footer-social a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .loading-spinner {
+            border: 4px solid var(--light-gray);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-section {
+                padding: 25px;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        a {
+            text-decoration: none;
+            color: var(--primary);
+        }
+        
+        a:hover {
+            color: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-laptop-code"></i>
+                <span>TechSpecCheck</span>
+            </div>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="about_us.html">About Us</a>
+                <a href="contact_us.html">Contact</a>
+                <a href="track_order.html">Track Order</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-container">
+            <h1 id="hero-title">About TechSpecCheck</h1>
+            <p id="hero-description">Your trusted partner for affordable technology gadgets and accessories in South Africa</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading content...</p>
+        </div>
+
+        <!-- Our Story Section -->
+        <div class="content-section" id="our-story-section" style="display: none;">
+            <h2>Our Story</h2>
+            <div id="our-story-content"></div>
+        </div>
+
+        <!-- What We Do Section -->
+        <div class="content-section" id="what-we-do-section" style="display: none;">
+            <h2>What We Do</h2>
+            <div id="what-we-do-content"></div>
+            
+            <div class="service-highlights">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="service-title">Affordable Tech</div>
+                    <div class="service-description">We source quality technology products at competitive prices, passing the savings directly to our customers.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="service-title">Paxi Delivery</div>
+                    <div class="service-description">We partner with Paxi for reliable nationwide delivery to your nearest PEP store for convenient collection.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="service-title">No-Login Shopping</div>
+                    <div class="service-description">We've eliminated the need for user accounts, making your shopping experience faster and more private.</div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="service-title">Privacy Focused</div>
+                    <div class="service-description">We don't store payment information or create user profiles. Your privacy is our priority.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section" id="stats-section" style="display: none;">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-products">500+</div>
+                    <div class="stat-label">Products Available</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-satisfaction">9/10</div>
+                    <div class="stat-label">Customer Satisfaction</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-delivery">R60</div>
+                    <div class="stat-label">Flat-Rate Delivery</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-coverage">Nationwide</div>
+                    <div class="stat-label">Delivery Coverage</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Values Section -->
+        <div class="content-section" id="our-values-section" style="display: none;">
+            <h2>Our Values</h2>
+            <div id="our-values-content"></div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="content-section team-section" id="team-section" style="display: none;">
+            <h2>Our Team</h2>
+            <div id="team-content"></div>
+            
+            <div class="team-grid" id="team-grid">
+                <!-- Team members will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="content-section" id="contact-section" style="display: none;">
+            <h2>Get In Touch</h2>
+            <div id="contact-content"></div>
+            
+            <div class="highlight-box">
+                <h3>Contact Information</h3>
+                <p><strong>General Inquiries:</strong> <a href="mailto:info@techspeccheck.co.za">info@techspeccheck.co.za</a></p>
+                <p><strong>Order Support:</strong> <a href="contact_us.html">Contact Us Form</a></p>
+                <p><strong>Track Order:</strong> <a href="track_order.html">Track Your Order</a></p>
+                <p><strong>Phone:</strong> +27 11 123 4567</p>
+                <p><strong>Address:</strong> 123 Tech Avenue, Johannesburg, South Africa</p>
+                <p><strong>Business Hours:</strong> Monday - Friday, 9:00 AM - 5:00 PM SAST</p>
+            </div>
+            
+            <p>For order-related issues, please use our <a href="contact_us.html">Contact Us form</a> for the fastest response. To check the status of your delivery, visit our <a href="track_order.html">Track Order page</a>.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>TechSpecCheck</h3>
+                <p>Your trusted source for affordable technology gadgets and accessories in South Africa.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="home.html">Home</a>
+                <a href="about_us.html">About Us</a>
+                <a href="track_order.html">Track Order</a>
+                <a href="contact_us.html">Contact Us</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Support</h3>
+                <a href="contact_us.html">Contact Us</a>
+                <a href="#">FAQ</a>
+                <a href="terms_conditions.html">Shipping Information</a>
+                <a href="terms_conditions.html">Returns & Refunds</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Tech Avenue, Johannesburg</p>
+                <p><i class="fas fa-phone"></i> +27 11 123 4567</p>
+                <p><i class="fas fa-envelope"></i> info@techspeccheck.co.za</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 TechSpecCheck. All rights reserved. | <a href="terms_conditions.html">Privacy Policy</a> | <a href="terms_conditions.html">Terms & Conditions</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+        
+        const supabaseUrl = 'https://wtiqgcsucpcqgyqutcmq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0aXFnY3N1Y3BjcWd5cXV0Y21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0MzMzNDYsImV4cCI6MjA2MjAwOTM0Nn0.MtXBQ9qXTPwWEBh8l5jYh_zDYKkYyiUc2WwaA5wrtpE';
+   
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Load About Us content
+        async function loadAboutUsContent() {
+            try {
+                // Load about_us data
+                const { data: aboutData, error: aboutError } = await supabase
+                    .from('about_us')
+                    .select('*')
+                    .single();
+
+                if (aboutError) throw aboutError;
+
+                // Load team members
+                const { data: teamData, error: teamError } = await supabase
+                    .from('team_members')
+                    .select('*')
+                    .order('display_order');
+
+                if (teamError) throw teamError;
+
+                // Hide loading spinner
+                document.getElementById('loading').style.display = 'none';
+
+                // Populate hero section
+                if (aboutData) {
+                    document.getElementById('hero-title').textContent = aboutData.hero_title;
+                    document.getElementById('hero-description').textContent = aboutData.hero_description;
+                    
+                    // Populate our story
+                    if (aboutData.our_story) {
+                        document.getElementById('our-story-content').innerHTML = aboutData.our_story;
+                        document.getElementById('our-story-section').style.display = 'block';
+                    }
+                    
+                    // Populate what we do
+                    if (aboutData.what_we_do) {
+                        document.getElementById('what-we-do-content').innerHTML = aboutData.what_we_do;
+                        document.getElementById('what-we-do-section').style.display = 'block';
+                    }
+                    
+                    // Populate our values
+                    if (aboutData.our_values) {
+                        document.getElementById('our-values-content').innerHTML = aboutData.our_values;
+                        document.getElementById('our-values-section').style.display = 'block';
+                    }
+                    
+                    // Populate contact section
+                    if (aboutData.contact_section) {
+                        document.getElementById('contact-content').innerHTML = aboutData.contact_section;
+                        document.getElementById('contact-section').style.display = 'block';
+                    }
+                    
+                    // Populate stats
+                    if (aboutData.stats_section) {
+                        document.getElementById('stat-products').textContent = aboutData.stats_section.products_available || '500+';
+                        document.getElementById('stat-satisfaction').textContent = aboutData.stats_section.customer_satisfaction || '9/10';
+                        document.getElementById('stat-delivery').textContent = aboutData.stats_section.delivery_cost || 'R60';
+                        document.getElementById('stat-coverage').textContent = aboutData.stats_section.delivery_coverage || 'Nationwide';
+                        document.getElementById('stats-section').style.display = 'block';
+                    }
+                }
+
+                // Populate team section
+                if (teamData && teamData.length > 0) {
+                    document.getElementById('team-content').innerHTML = aboutData.team_section || 'TechSpecCheck is powered by a small but dedicated team of technology enthusiasts and business professionals committed to making quality tech accessible to all South Africans.';
+                    document.getElementById('team-section').style.display = 'block';
+                    
+                    const teamGrid = document.getElementById('team-grid');
+                    teamGrid.innerHTML = '';
+                    
+                    teamData.forEach(member => {
+                        const memberEl = document.createElement('div');
+                        memberEl.className = 'team-member';
+                        memberEl.innerHTML = `
+                            <div class="member-avatar">
+                                ${member.avatar_url ? 
+                                    `<img src="${member.avatar_url}" alt="${member.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                     <i class="fas fa-user" style="display: none;"></i>` :
+                                    `<i class="fas fa-user"></i>`
+                                }
+                            </div>
+                            <div class="member-name">${member.name}</div>
+                            <div class="member-role">${member.role}</div>
+                            <div class="member-bio">${member.bio}</div>
+                        `;
+                        teamGrid.appendChild(memberEl);
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error loading content:', error);
+                document.getElementById('loading').innerHTML = `
+                    <p>Error loading content. Please try refreshing the page.</p>
+                    <p>If the problem persists, please contact us.</p>
+                `;
+            }
+        }
+
+        // Load content when page loads
+        document.addEventListener('DOMContentLoaded', loadAboutUsContent);
+    </script>
+</body>
+</html>
