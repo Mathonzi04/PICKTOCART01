@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TECHSpec Check - Track Your Order</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f2f2f2;
+            color: #1f2937;
+            padding: 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #ffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h4 {
+            color: #000;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-links {
+            position: relative;
+        }
+        
+        #nav-check {
+            display: none;
+        }
+        
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 35px;
+            height: 25px;
+            cursor: pointer;
+        }
+        
+        .nav-toggle span {
+            height: 3px;
+            width: 100%;
+            background-color: #333;
+            border-radius: 3px;
+        }
+        
+        .nav-list {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+            width: 550px;
+            justify-content: center;
+        }
+        
+        .nav-list li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .nav-list li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Main content */
+        .main-content {
+            padding: 25px;
+            flex: 1;
+        }
+        
+        .tracking-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E9C46A;
+            color: #1f2937;
+        }
+        
+        .tracking-form {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #2A9D8F;
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+        }
+        
+        .track-btn {
+            padding: 12px 25px;
+            background: #2A9D8F;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .track-btn:hover {
+            background-color: #1a936f;
+        }
+        
+        /* Tracking Status */
+        .tracking-status {
+            margin-top: 30px;
+        }
+        
+        .status-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #e5e7eb;
+        }
+        
+        .status-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        
+        .status-icon.active {
+            background: #2A9D8F;
+            color: white;
+        }
+        
+        .status-icon.completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .status-content {
+            flex: 1;
+        }
+        
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .status-date {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .status-message {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .order-details {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .detail-value {
+            color: #6b7280;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.error {
+            background-color: #ef4444;
+        }
+        
+        /* Delivery Method Badge */
+        .delivery-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .delivery-paxi {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .delivery-courier {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            padding: 40px 20px;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 12px;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .footer-social a {
+            font-size: 20px;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .footer-social a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: 30px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+            
+            .nav-list {
+                display: none;
+                position: absolute;
+                top: 105px;
+                left: -20px;
+                width: 382px;
+                background: #ffff;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                gap: 15px;
+            }
+            
+            #nav-check:checked ~ .nav-list {
+                display: flex;
+            }
+            
+            .tracking-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="nav-links">
+            <input type="checkbox" id="nav-check">
+            <label for="nav-check" class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
+            <ul class="nav-list">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="about_us.html">About us</a></li>
+                <li><a href="contact_us.html">Contact Us</a></li>
+            </ul>
+        </div>
+        
+        <h4>TECHSpec Check</h4>
+        
+        <div class="cart-funct">
+            <div class="cart-image">
+                <a href="home.html">
+                    <i class="fas fa-home" style="font-size:24px; color:#333;"></i> 
+                </a>
+            </div>
+        </div> 
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 style="margin: 20px 0 30px; text-align: center; color: #1f2937;">Track Your Order</h1>
+        
+        <div class="tracking-container">
+            <div class="tracking-form">
+                <h2 class="section-title">Enter Your Reference Number</h2>
+                <form id="tracking-form">
+                    <div class="form-group">
+                        <label for="reference-number">Reference Number</label>
+                        <input type="text" id="reference-number" placeholder="e.g., TSC123456789" required>
+                    </div>
+                    <button type="submit" class="track-btn">Track Order</button>
+                </form>
+            </div>
+            
+            <div id="tracking-results" style="display: none;">
+                <h2 class="section-title">
+                    Order Tracking 
+                    <span id="delivery-badge" class="delivery-badge"></span>
+                </h2>
+                <div class="order-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Reference Number:</span>
+                        <span class="detail-value" id="ref-number">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Customer Name:</span>
+                        <span class="detail-value" id="customer-name">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Delivery Method:</span>
+                        <span class="detail-value" id="delivery-method">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Delivery Details:</span>
+                        <span class="detail-value" id="delivery-details">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Order Details:</span>
+                        <span class="detail-value" id="order-details">-</span>
+                    </div>
+                </div>
+                
+                <div class="tracking-status">
+                    <h3 style="margin-bottom: 20px;">Order Status</h3>
+                    <div class="status-timeline" id="status-timeline">
+                        <!-- Status steps will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TECHSpec Check</h3>
+                <p>Your trusted partner for quality tech products and accessories. We offer the latest gadgets at competitive prices.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="home.html">Home</a>
+                <a href="about_us.html">About Us</a>
+                <a href="contact_us.html">Send Complaint</a>
+                <a href="#">Blog</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Tech Street, Johannesburg</p>
+                <p><i class="fas fa-phone"></i> +27 11 123 4567</p>
+                <p><i class="fas fa-envelope"></i> info@techspeccheck.co.za</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <p>Subscribe to our newsletter for the latest product updates and special offers.</p>
+                <form>
+                    <input type="email" placeholder="Your Email" style="padding:10px; width:100%; border-radius:5px; border:none; margin-bottom:10px;">
+                    <button type="submit" style="padding:10px 15px; background:white; color:#2A9D8F; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2023 TECHSpec Check. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+        
+        const supabaseUrl = 'https://wtiqgcsucpcqgyqutcmq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0aXFnY3N1Y3BjcWd5cXV0Y21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0MzMzNDYsImV4cCI6MjA2MjAwOTM0Nn0.MtXBQ9qXTPwWEBh8l5jYh_zDYKkYyiUc2WwaA5wrtpE';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        // Function to show toast notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = isError ? 'toast error' : 'toast';
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+        
+        // Function to format date
+        function formatDate(dateString) {
+            if (!dateString) return 'Not yet';
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+        
+        // Function to get delivery method display text
+        function getDeliveryMethodDisplay(deliveryMethod) {
+            const methodMap = {
+                'paxi': 'Paxi (PEP Store)',
+                'courier-guy': 'Courier Guy'
+            };
+            return methodMap[deliveryMethod] || deliveryMethod || 'Not specified';
+        }
+        
+        // Function to get delivery details (PEP code or address)
+        function getDeliveryDetails(order) {
+            if (order.delivery_method === 'paxi') {
+                return order.pep_store_code || 'None';
+            } else if (order.delivery_method === 'courier-guy') {
+                return order.physical_address || 'None';
+            }
+            return 'None';
+        }
+        
+        // Function to get status display info based on delivery method
+        function getStatusInfo(status, deliveryMethod) {
+            if (deliveryMethod === 'courier-guy') {
+                const courierGuyStatusMap = {
+                    'order_received': { 
+                        title: 'Order Received', 
+                        description: 'We have received your order and are processing it.',
+                        icon: 'shopping-cart'
+                    },
+                    'order_approved': { 
+                        title: 'Order Approved', 
+                        description: 'Your order has been approved and is being prepared for shipment.',
+                        icon: 'check'
+                    },
+                    'order_picked_by_courier': { 
+                        title: 'Order Picked by Courier', 
+                        description: 'The courier has collected your order from our warehouse.',
+                        icon: 'shipping-fast'
+                    },
+                    'email_sent_with_tracking': { 
+                        title: 'Email Sent with Tracking Code', 
+                        description: 'We have sent you an email with the tracking code to monitor your parcel on the courier website.',
+                        icon: 'envelope'
+                    },
+                    'order_picked': { 
+                        title: 'Order Delivered', 
+                        description: 'Your order has been successfully delivered to your address.',
+                        icon: 'home'
+                    }
+                };
+                return courierGuyStatusMap[status] || { title: status, description: '', icon: 'info-circle' };
+            } else {
+                // Paxi status flow
+                const paxiStatusMap = {
+                    'order_received': { 
+                        title: 'Order Received', 
+                        description: 'We have received your order and are processing it.',
+                        icon: 'shopping-cart'
+                    },
+                    'order_approved': { 
+                        title: 'Order Approved', 
+                        description: 'Your order has been approved and is being prepared for shipment.',
+                        icon: 'check'
+                    },
+                    'ready_for_delivery': { 
+                        title: 'Ready for Delivery', 
+                        description: 'Your order is packed and ready for delivery to the PEP store.',
+                        icon: 'box'
+                    },
+                    'on_delivery': { 
+                        title: 'On Delivery', 
+                        description: 'Your order is out for delivery to the PEP store.',
+                        icon: 'shipping-fast'
+                    },
+                    'reached_destination': { 
+                        title: 'Reached Destination', 
+                        description: 'Your order has arrived at the PEP store.',
+                        icon: 'store'
+                    },
+                    'order_picked': { 
+                        title: 'Order Picked Up', 
+                        description: 'You have collected your order from the PEP store.',
+                        icon: 'user-check'
+                    }
+                };
+                return paxiStatusMap[status] || { title: status, description: '', icon: 'info-circle' };
+            }
+        }
+        
+        // Function to get status steps based on delivery method
+        function getStatusSteps(deliveryMethod) {
+            if (deliveryMethod === 'courier-guy') {
+                return [
+                    { 
+                        status: 'order_received', 
+                        dateField: 'status_update_date',
+                        message: 'Your order has been received and is being processed.'
+                    },
+                    { 
+                        status: 'order_approved', 
+                        dateField: 'order_approved_date',
+                        message: 'Your order has been approved and is being prepared for shipment.'
+                    },
+                    { 
+                        status: 'order_picked_by_courier', 
+                        dateField: 'ready_for_delivery_date',
+                        message: 'The courier will collect your order from our warehouse.'
+                    },
+                    { 
+                        status: 'email_sent_with_tracking', 
+                        dateField: 'on_delivery_time',
+                        message: 'You will receive an email with tracking information.'
+                    },
+                    { 
+                        status: 'order_picked', 
+                        dateField: 'reached_destination_time',
+                        message: 'Your order will be delivered to your address.'
+                    }
+                ];
+            } else {
+                // Paxi status flow
+                return [
+                    { 
+                        status: 'order_received', 
+                        dateField: 'status_update_date',
+                        message: 'Your order has been received and is being processed.'
+                    },
+                    { 
+                        status: 'order_approved', 
+                        dateField: 'order_approved_date',
+                        message: 'Your order has been approved and is being prepared for shipment.'
+                    },
+                    { 
+                        status: 'ready_for_delivery', 
+                        dateField: 'ready_for_delivery_date',
+                        message: 'Your order is packed and ready for delivery to the PEP store.'
+                    },
+                    { 
+                        status: 'on_delivery', 
+                        dateField: 'on_delivery_time',
+                        message: 'Your order is on its way to the PEP store.'
+                    },
+                    { 
+                        status: 'reached_destination', 
+                        dateField: 'reached_destination_time',
+                        message: 'Your order has arrived at the PEP store.'
+                    },
+                    { 
+                        status: 'order_picked', 
+                        dateField: 'reached_destination_time', // Using same date for simplicity
+                        message: 'You can collect your order from the PEP store.'
+                    }
+                ];
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const trackingForm = document.getElementById('tracking-form');
+            const trackingResults = document.getElementById('tracking-results');
+            
+            // Check if there's a reference number in URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const refParam = urlParams.get('ref');
+            if (refParam) {
+                document.getElementById('reference-number').value = refParam;
+                // Auto-submit the form if there's a reference in the URL
+                setTimeout(() => {
+                    trackingForm.dispatchEvent(new Event('submit'));
+                }, 500);
+            }
+            
+            trackingForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const referenceNumber = document.getElementById('reference-number').value.trim();
+                
+                if (!referenceNumber) {
+                    showToast('Please enter a reference number', true);
+                    return;
+                }
+                
+                try {
+                    // Fetch tracking information from Supabase
+                    const { data, error } = await supabase
+                        .from('package_tracking')
+                        .select('*')
+                        .eq('reference_number', referenceNumber)
+                        .single();
+                    
+                    if (error) {
+                        console.error('Error fetching tracking:', error);
+                        showToast('Order not found. Please check your reference number.', true);
+                        return;
+                    }
+                    
+                    if (!data) {
+                        showToast('Order not found. Please check your reference number.', true);
+                        return;
+                    }
+                    
+                    // Display order details
+                    document.getElementById('ref-number').textContent = data.reference_number;
+                    document.getElementById('customer-name').textContent = `${data.customer_first_name} ${data.customer_last_name}`;
+                    document.getElementById('delivery-method').textContent = getDeliveryMethodDisplay(data.delivery_method);
+                    document.getElementById('delivery-details').textContent = getDeliveryDetails(data);
+                    document.getElementById('order-details').textContent = data.order_details;
+                    
+                    // Update delivery badge
+                    const deliveryBadge = document.getElementById('delivery-badge');
+                    deliveryBadge.textContent = data.delivery_method === 'paxi' ? 'PAXI' : 'COURIER GUY';
+                    deliveryBadge.className = data.delivery_method === 'paxi' ? 
+                        'delivery-badge delivery-paxi' : 'delivery-badge delivery-courier';
+                    
+                    // Build status timeline
+                    const timeline = document.getElementById('status-timeline');
+                    timeline.innerHTML = '';
+                    
+                    const statusSteps = getStatusSteps(data.delivery_method);
+                    let currentStatusReached = false;
+                    
+                    statusSteps.forEach(step => {
+                        const statusInfo = getStatusInfo(step.status, data.delivery_method);
+                        const stepElement = document.createElement('div');
+                        stepElement.className = 'status-step';
+                        
+                        // Determine if this step is completed, active, or pending
+                        let iconClass = 'status-icon';
+                        const stepDate = data[step.dateField];
+                        
+                        if (stepDate) {
+                            iconClass += ' completed';
+                        } else if (!currentStatusReached) {
+                            iconClass += ' active';
+                            currentStatusReached = true;
+                        }
+                        
+                        stepElement.innerHTML = `
+                            <div class="${iconClass}">
+                                <i class="fas fa-${statusInfo.icon}"></i>
+                            </div>
+                            <div class="status-content">
+                                <div class="status-title">${statusInfo.title}</div>
+                                <div class="status-date">${formatDate(stepDate)}</div>
+                                <div class="status-message">${step.message}</div>
+                            </div>
+                        `;
+                        
+                        timeline.appendChild(stepElement);
+                    });
+                    
+                    // Show tracking results
+                    trackingResults.style.display = 'block';
+                    showToast('Order tracking information loaded successfully.');
+                    
+                    // Scroll to results
+                    trackingResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An error occurred while fetching tracking information.', true);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
