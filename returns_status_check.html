@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Return Status</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2A9D8F;
+            --primary-light: #4BB8A9;
+            --primary-dark: #1a7c6e;
+            --secondary: #E9C46A;
+            --accent: #E76F51;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            margin: 20px auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: var(--gray);
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Search Form */
+        .search-form {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px dashed #e9ecef;
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 16px;
+        }
+
+        .form-input {
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
+        }
+
+        .form-note {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Status Display */
+        .status-display {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .status-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .return-id {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            background: #f0f7f6;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .progress-timeline {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .timeline-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .timeline-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .step-icon.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step-icon.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--gray);
+            text-align: center;
+            max-width: 80px;
+        }
+
+        .step-label.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Error Message */
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid var(--danger);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .error-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .support-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .support-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .status-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-steps {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .timeline-steps::before {
+                display: none;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-undo"></i>
+                Track Your Return Status
+            </h1>
+            <p>Enter your return reference number below to check the current status of your return request.</p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="search-form">
+            <h2 class="form-title">Find Your Return</h2>
+            <div class="form-group">
+                <label class="form-label" for="return-id">Return Reference Number *</label>
+                <input type="text" id="return-id" class="form-input" placeholder="Enter your return ID (e.g., RET-000001)" required>
+                <div class="form-note">
+                    <i class="fas fa-info-circle"></i> You can find your return reference number in your confirmation email or return receipt.
+                </div>
+            </div>
+            <button class="search-btn" id="check-status-btn">
+                <i class="fas fa-search"></i> Check Status
+            </button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading" id="loading-spinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Checking return status...</div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="error-message">
+            <div class="error-title">
+                <i class="fas fa-exclamation-circle"></i>
+                Return Not Found
+            </div>
+            <p>We couldn't find a return with the reference number you provided. Please check the number and try again.</p>
+            <div class="form-note" style="margin-top: 15px;">
+                <i class="fas fa-lightbulb"></i> Need help? Contact our customer support for assistance.
+            </div>
+        </div>
+
+        <!-- Status Display -->
+        <div class="status-display" id="status-display">
+            <div class="status-card">
+                <div class="status-header">
+                    <div>
+                        <h3 class="status-title">Return Status</h3>
+                        <div class="status-badge" id="current-status">Pending</div>
+                    </div>
+                    <div class="return-id" id="display-return-id">RET-000000</div>
+                </div>
+
+                <div class="status-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Customer Name</span>
+                        <span class="detail-value" id="customer-name">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Order ID</span>
+                        <span class="detail-value" id="order-id">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Product</span>
+                        <span class="detail-value" id="product-name">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Quantity</span>
+                        <span class="detail-value" id="quantity">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Return Reason</span>
+                        <span class="detail-value" id="return-reason">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Refund Amount</span>
+                        <span class="detail-value" id="refund-amount">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Date Submitted</span>
+                        <span class="detail-value" id="date-submitted">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Last Updated</span>
+                        <span class="detail-value" id="last-updated">-</span>
+                    </div>
+                </div>
+
+                <div class="progress-timeline">
+                    <h4 class="timeline-title">Return Progress</h4>
+                    <div class="timeline-steps" id="timeline-steps">
+                        <!-- Timeline steps will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Notes</label>
+                    <div class="form-input" style="background: #f8f9fa; min-height: 80px;" id="return-notes">
+                        No additional notes available.
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="check_returns_status.html" class="action-btn btn-secondary">
+                        <i class="fas fa-search"></i> Check Another Return
+                    </a>
+                    <button class="action-btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Status
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Need further assistance with your return?</p>
+            <div class="support-info">
+                <div class="support-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>support@returns.com</span>
+                </div>
+                <div class="support-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+27 12 345 6789</span>
+                </div>
+                <div class="support-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Mon-Fri 9:00-17:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+        
+        const supabaseUrl = 'https://wtiqgcsucpcqgyqutcmq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0aXFnY3N1Y3BjcWd5cXV0Y21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0MzMzNDYsImV4cCI6MjA2MjAwOTM0Nn0.MtXBQ9qXTPwWEBh8l5jYh_zDYKkYyiUc2WwaA5wrtpE';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Get DOM elements
+        const searchForm = document.querySelector('.search-form');
+        const statusDisplay = document.getElementById('status-display');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const errorMessage = document.getElementById('error-message');
+        const checkStatusBtn = document.getElementById('check-status-btn');
+        const returnIdInput = document.getElementById('return-id');
+
+        // Define timeline steps
+        const timelineSteps = [
+            { id: 'submitted', label: 'Submitted', icon: 'fa-paper-plane' },
+            { id: 'received', label: 'Received', icon: 'fa-box-open' },
+            { id: 'processing', label: 'Processing', icon: 'fa-cogs' },
+            { id: 'approved', label: 'Approved', icon: 'fa-check-circle' },
+            { id: 'completed', label: 'Completed', icon: 'fa-undo' }
+        ];
+
+        // Status mapping to timeline
+        const statusToStep = {
+            'pending': 'submitted',
+            'processing': 'processing',
+            'approved': 'approved',
+            'rejected': 'approved', // Rejected is considered "approved" step but with different status
+            'completed': 'completed'
+        };
+
+        // Format return ID (same as in returns_management.html)
+        function formatReturnId(id) {
+            if (!id) return 'RET-000000';
+            
+            // Check if it's already formatted
+            if (typeof id === 'string' && id.includes('-')) {
+                return id;
+            }
+            
+            // If it's a number, pad it to 6 digits
+            const idNum = parseInt(id);
+            if (!isNaN(idNum)) {
+                return `RET-${idNum.toString().padStart(6, '0')}`;
+            }
+            
+            // For new generated IDs, return as is
+            return id;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-ZA', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Format currency (South African Rand)
+        function formatCurrency(amount) {
+            if (!amount || amount === 0) return 'R 0.00';
+            return `R ${parseFloat(amount).toFixed(2)}`;
+        }
+
+        // Get status display class
+        function getStatusClass(status) {
+            return `status-${status}`;
+        }
+
+        // Get status display text
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Pending',
+                'processing': 'Processing',
+                'approved': 'Approved',
+                'rejected': 'Rejected',
+                'completed': 'Completed'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Create timeline steps HTML
+        function createTimelineSteps(currentStatus) {
+            const currentStep = statusToStep[currentStatus] || 'submitted';
+            
+            return timelineSteps.map(step => {
+                let stepClass = '';
+                let iconClass = '';
+                
+                // Determine step state
+                if (step.id === currentStep) {
+                    stepClass = 'active';
+                    iconClass = currentStatus === 'rejected' ? 'fa-times-circle' : step.icon;
+                } else if (
+                    (step.id === 'submitted') ||
+                    (step.id === 'received' && currentStep !== 'submitted') ||
+                    (step.id === 'processing' && ['approved', 'completed'].includes(currentStep)) ||
+                    (step.id === 'approved' && currentStep === 'completed')
+                ) {
+                    stepClass = 'completed';
+                    iconClass = 'fa-check';
+                } else {
+                    iconClass = step.icon;
+                }
+
+                // Special handling for rejected status
+                if (currentStatus === 'rejected' && step.id === 'approved') {
+                    stepClass = 'active';
+                    iconClass = 'fa-times-circle';
+                }
+
+                return `
+                    <div class="timeline-step">
+                        <div class="step-icon ${stepClass}">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                        <div class="step-label ${stepClass}">${step.label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Check return status
+        async function checkReturnStatus() {
+            let returnId = returnIdInput.value.trim().toUpperCase();
+            
+            if (!returnId) {
+                alert('Please enter a return reference number.');
+                returnIdInput.focus();
+                return;
+            }
+
+            // Try to format the ID if it's just numbers
+            if (/^\d+$/.test(returnId)) {
+                returnId = `RET-${returnId.padStart(6, '0')}`;
+                returnIdInput.value = returnId;
+            }
+
+            // Show loading, hide other sections
+            loadingSpinner.style.display = 'flex';
+            statusDisplay.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            try {
+                // Fetch return from database
+                const { data: returnItem, error } = await supabase
+                    .from('returns')
+                    .select('*')
+                    .eq('id', returnId)
+                    .single();
+
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        // No rows returned - try without formatting for old IDs
+                        // For backward compatibility
+                        const { data: oldReturn, error: oldError } = await supabase
+                            .from('returns')
+                            .select('*')
+                            .eq('id', returnId.replace('RET-', ''))
+                            .single();
+                            
+                        if (oldError) {
+                            throw new Error('Return not found');
+                        }
+                        
+                        // Use the old return data
+                        const formattedId = formatReturnId(oldReturn.id);
+                        oldReturn.id = formattedId;
+                        processReturnData(oldReturn);
+                        return;
+                    } else {
+                        throw error;
+                    }
+                }
+
+                // Process and display return data
+                processReturnData(returnItem);
+
+            } catch (error) {
+                console.error("Error checking return status:", error);
+                
+                // Hide loading
+                loadingSpinner.style.display = 'none';
+                
+                // Show error message
+                errorMessage.style.display = 'block';
+                errorMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Process and display return data
+        function processReturnData(returnItem) {
+            // Hide loading
+            loadingSpinner.style.display = 'none';
+
+            // Format the return ID for display
+            const formattedId = formatReturnId(returnItem.id);
+            
+            // Update display with return data
+            document.getElementById('display-return-id').textContent = formattedId;
+            document.getElementById('current-status').textContent = getStatusText(returnItem.status);
+            document.getElementById('current-status').className = `status-badge ${getStatusClass(returnItem.status)}`;
+            document.getElementById('customer-name').textContent = returnItem.customer_name;
+            document.getElementById('order-id').textContent = returnItem.order_id || '-';
+            document.getElementById('product-name').textContent = returnItem.product_name;
+            document.getElementById('quantity').textContent = returnItem.quantity;
+            document.getElementById('return-reason').textContent = returnItem.reason;
+            document.getElementById('refund-amount').textContent = formatCurrency(returnItem.refund_amount);
+            document.getElementById('date-submitted').textContent = formatDate(returnItem.created_at);
+            document.getElementById('last-updated').textContent = formatDate(returnItem.updated_at);
+            document.getElementById('return-notes').textContent = returnItem.description || 'No additional notes available.';
+
+            // Update timeline
+            const timelineContainer = document.getElementById('timeline-steps');
+            timelineContainer.innerHTML = createTimelineSteps(returnItem.status);
+
+            // Show status display
+            statusDisplay.style.display = 'block';
+
+            // Scroll to status display
+            statusDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Event Listeners
+        checkStatusBtn.addEventListener('click', checkReturnStatus);
+
+        // Allow Enter key to trigger search
+        returnIdInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkReturnStatus();
+            }
+        });
+
+        // Auto-focus on input
+        document.addEventListener('DOMContentLoaded', function() {
+            returnIdInput.focus();
+        });
+    </script>
+</body>
+</html>
